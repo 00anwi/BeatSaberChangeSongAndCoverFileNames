@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -89,6 +90,29 @@ namespace ChangeSongAndCoverFileNameAndInfo
 
                         Console.WriteLine("Changed name off cover" + extension + " to" + songName);
                     }
+
+                    if (item.Name == "_coverImageFilename")
+                    {
+                        if (Path.GetExtension(item.Value.ToString()).ToLowerInvariant() == ".png")
+                        {
+                            var extension = Path.GetExtension(item.Value.ToString()).ToLowerInvariant();
+                            string oldFile = item.Value.ToString();
+
+                            string file = subdir + "/" + item.Value.ToString();
+                            string name = Path.GetFileNameWithoutExtension(file);
+                            string path = Path.GetDirectoryName(file);
+                            Image png = Image.FromFile(file);
+                            png.Save(path + @"/" + name + ".jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                            png.Dispose();
+
+                            string newFile = name + ".jpg";
+
+                            item.Value = newFile;
+
+                            Console.WriteLine($"Changed {oldFile} to {newFile}");
+                        }
+                    }
+
                 }
                 result = jobj.ToString();
             }
